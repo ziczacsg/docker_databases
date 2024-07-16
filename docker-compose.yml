@@ -1,0 +1,52 @@
+version: '3'
+
+volumes:
+  mssql-db:
+  mysql-db:
+
+services:
+  # mssql:
+  #   image: mcr.microsoft.com/mssql/server:2019-latest
+  #   ports:
+  #     - "1433:1433"
+  #   environment:
+  #     - ACCEPT_EULA=Y
+  #     - SA_PASSWORD=Root1234
+  #     - MSSQL_PID=Developer
+  #     - MSSQL_LCID=1041
+  #     - MSSQL_COLLATION=Japanese_BIN
+  #     - TZ=Asia/Tokyo
+  #   volumes:
+  #     - mssql-db:/var/opt/mssql
+  #     # - ./mssql:/tmp/mssql                                                        # B.SQL Serverとのデータやり取りで使用する
+  #   container_name: mssql_2019
+  #   restart: always
+
+# docker run -p 3306:3306 — name=mysql-demo-db -d mysql/mysql-server:5.7 mysqld — lower_case_table_names=1
+  mysql:
+    image: mysql:5.7
+    container_name: mysql-5.7
+    # restart: always                   # always restart
+    environment:
+      MYSQL_DATABASE: 'bdsthom_db'      # name of database
+      MYSQL_USER: 'bdsthom_user'        # sample is the name of user
+      MYSQL_PASSWORD: 'dacbao'          # password for sample user
+      MYSQL_ROOT_PASSWORD: '123456'     # password for root user
+    ports:
+      - '3306:3306'                     # host port 3306 is mapper to docker port 3306
+    expose:
+      - '3306'
+    volumes:
+      - mysql-db:/var/lib/mysql
+
+  phpmyadmin:
+    depends_on:
+      - mysql
+    image: phpmyadmin
+    # restart: always
+    ports:
+      - "8090:80"
+    environment:
+      PMA_HOST: mysql-5.7
+      MYSQL_ROOT_PASSWORD: 123456
+      UPLOAD_LIMIT: 102400K
